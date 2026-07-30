@@ -1,5 +1,11 @@
 import socket
 import struct
+import os
+import time
+from rich.live import Live
+from rich.table import Table
+import time
+import threading
 
 HOST = "127.0.0.1"
 PORT = 20777
@@ -8,6 +14,55 @@ HEADER_FORMAT = "<HBBBBBQfIIBB"
 HEADER_SIZE = struct.calcsize(HEADER_FORMAT)
 TELEMETRY_FORMAT = "<HfffBbHBBHHHHHBBBBBBBBHffffBBBB"
 TELEMETRY_SIZE = struct.calcsize(TELEMETRY_FORMAT)
+
+
+#Race state class to hold the telemetry data
+class RaceState:
+    def __init__(self):
+        self.speed = 0
+        self.throttle = 0.0
+        self.steer = 0.0
+        self.brake = 0.0
+        self.gear = 0
+        self.rpm = 0
+        self.drs = 0
+        
+    #Function to update the telemetry data
+    def update(self,telemetry):
+        self.speed = telemetry["speed"]
+        self.throttle = telemetry["throttle"]
+        self.steer = telemetry["steer"]
+        self.brake = telemetry["brake"]
+        self.gear = telemetry["gear"]
+        self.rpm = telemetry["rpm"]
+        self.drs = telemetry["drs"]
+        
+#Function to print the telemetry data
+from rich.table import Table
+
+def create_dashboard(race_state):
+    table = Table(title="My feed design (MFD)")
+
+    table.add_column("Metric", style="cyan")
+    table.add_column("Value", style="green")
+
+    table.add_row("Speed", f"{race_state.speed} km/h")
+    table.add_row("Gear", str(race_state.gear))
+    table.add_row("RPM", str(race_state.rpm))
+    table.add_row("Throttle", f"{race_state.throttle*100:.0f}%")
+    table.add_row("Brake", f"{race_state.brake*100:.0f}%")
+    table.add_row("Steering", f"{race_state.steer:.2f}")
+    table.add_row("DRS", "ON" if race_state.drs else "OFF")
+
+    return table
+def dashboard():
+    with Live(create_dashboard(race_state),
+              refresh_per_second=30,
+              screen=True) as live:
+
+        while True:
+            live.update(create_dashboard(race_state))
+            time.sleep(0.01)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 print(HEADER_SIZE)
@@ -52,7 +107,7 @@ def parse_car_telemetry(data):
         "gear":gear,
         "rpm":rpm,
         "drs":drs
-    }
+    } 
 # while (True):
     
 #     data, addr = sock.recvfrom(2048)
@@ -84,12 +139,20 @@ def parse_car_telemetry(data):
 #     ) = header
 #     print(packet_id)
 #     print()
-while True:
-    data, addr = sock.recvfrom(2048)
 
+#Race state object to hold the telemetry data 
+race_state = RaceState()
+dashboard_thread = threading.Thread(target=dashboard, daemon=True)
+dashboard_thread.start()
+
+
+while True:
+    
+    data, addr = sock.recvfrom(2048)
     header = parse_header(data)
 
     if header["packet_id"] == 6:
         telemetry = parse_car_telemetry(data)
-        print(telemetry)
+        race_state.update(telemetry)
+        
     
