@@ -26,7 +26,33 @@ class RaceState:
         self.gear = 0
         self.rpm = 0
         self.drs = 0
-        
+        self.rev_light_perc = 0
+        self.brake_temp={
+            "FL":0,
+            "FR":0,
+            "RL":0,
+            "RR":0
+        }
+        self.tyre_surf_temp={
+            "FL":0,
+            "FR":0,
+            "RL":0,
+            "RR":0
+        }
+        self.tyre_inner_temp={
+            "FL":0,
+            "FR":0,
+            "RL":0,
+            "RR":0
+        }
+        self.engine_temp = 0
+        self.tyre_pressure = {
+            "FL":0,
+            "FR":0,
+            "RL":0,
+            "RR":0
+        }
+        self.surface_type = 0
     #Function to update the telemetry data
     def update(self,telemetry):
         self.speed = telemetry["speed"]
@@ -36,6 +62,13 @@ class RaceState:
         self.gear = telemetry["gear"]
         self.rpm = telemetry["rpm"]
         self.drs = telemetry["drs"]
+        self.rev_light_perc = telemetry["rev_light_perc"]
+        self.brake_temp = telemetry["brake_temp"]
+        self.tyre_surf_temp = telemetry["tyre_surf_temp"]
+        self.tyre_inner_temp = telemetry["tyre_inner_temp"]
+        self.engine_temp = telemetry["engine_temp"]
+        self.tyre_pressure = telemetry["tyre_pressure"]
+        self.surface_type = telemetry["surface_type"]
         
 #Function to print the telemetry data
 from rich.table import Table
@@ -53,6 +86,25 @@ def create_dashboard(race_state):
     table.add_row("Brake", f"{race_state.brake*100:.0f}%")
     table.add_row("Steering", f"{race_state.steer:.2f}")
     table.add_row("DRS", "ON" if race_state.drs else "OFF")
+    table.add_row("Rev Lights", f"{race_state.rev_light_perc}%")
+    table.add_row("Brake Temperature (FL)", f"{race_state.brake_temp['FL']} °C")
+    table.add_row("Brake Temperature (FR)", f"{race_state.brake_temp['FR']} °C")
+    table.add_row("Brake Temperature (RL)", f"{race_state.brake_temp['RL']} °C")
+    table.add_row("Brake Temperature (RR)", f"{race_state.brake_temp['RR']} °C")
+    table.add_row("Tyre Surface Temperature (FL)", f"{race_state.tyre_surf_temp['FL']} °C")
+    table.add_row("Tyre Surface Temperature (FR)", f"{race_state.tyre_surf_temp['FR']} °C")
+    table.add_row("Tyre Surface Temperature (RL)", f"{race_state.tyre_surf_temp['RL']} °C")
+    table.add_row("Tyre Surface Temperature (RR)", f"{race_state.tyre_surf_temp['RR']} °C")
+    table.add_row("Tyre Inner Temperature (FL)", f"{race_state.tyre_inner_temp['FL']} °C")
+    table.add_row("Tyre Inner Temperature (FR)", f"{race_state.tyre_inner_temp['FR']} °C")
+    table.add_row("Tyre Inner Temperature (RL)", f"{race_state.tyre_inner_temp['RL']} °C")
+    table.add_row("Tyre Inner Temperature (RR)", f"{race_state.tyre_inner_temp['RR']} °C")
+    table.add_row("Engine Temperature", f"{race_state.engine_temp} °C")
+    table.add_row("Tyre Pressure (FL)", f"{race_state.tyre_pressure['FL']}")
+    table.add_row("Tyre Pressure (FR)", f"{race_state.tyre_pressure['FR']}")
+    table.add_row("Tyre Pressure (RL)", f"{race_state.tyre_pressure['RL']}")
+    table.add_row("Tyre Pressure (RR)", f"{race_state.tyre_pressure['RR']}")
+
 
     return table
 def dashboard():
@@ -99,6 +151,33 @@ def parse_car_telemetry(data):
     gear = telemetry[5]
     rpm = telemetry[6]
     drs = telemetry[7]
+    rev_light_perc = telemetry[8]
+    brake_temp ={
+        "FL": telemetry[10],
+        "FR": telemetry[11],
+        "RL": telemetry[12],
+        "RR": telemetry[13]
+    }
+    tyre_surf_temp = {
+        "FL": telemetry[14],
+        "FR": telemetry[15],
+        "RL": telemetry[16],
+        "RR": telemetry[17]
+    }
+    tyre_inner_temp = {
+        "FL": telemetry[18],
+        "FR": telemetry[19],
+        "RL": telemetry[20],
+        "RR": telemetry[21]
+    }
+    engine_temp = telemetry[22]
+    tyre_pressure = {
+        "FL": telemetry[23],
+        "FR": telemetry[24],
+        "RL": telemetry[25],
+        "RR": telemetry[26]
+    }
+    surface_type = telemetry[27]
     return{
         "speed":speed,
         "throttle":throttle,
@@ -106,7 +185,14 @@ def parse_car_telemetry(data):
         "brake":brake,
         "gear":gear,
         "rpm":rpm,
-        "drs":drs
+        "drs":drs,
+        "rev_light_perc":rev_light_perc,
+        "brake_temp" : brake_temp,
+        "tyre_surf_temp" : tyre_surf_temp,
+        "tyre_inner_temp" : tyre_inner_temp,
+        "engine_temp" : engine_temp,
+        "tyre_pressure" : tyre_pressure,
+        "surface_type" : surface_type
     } 
 # while (True):
     
