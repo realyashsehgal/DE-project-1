@@ -67,7 +67,7 @@ class RaceState:
         
         
     #Function to update the telemetry data
-    def update(self,telemetry):
+    def update_telemetry(self,telemetry):
         self.speed = telemetry["speed"]
         self.throttle = telemetry["throttle"]
         self.steer = telemetry["steer"]
@@ -82,7 +82,15 @@ class RaceState:
         self.engine_temp = telemetry["engine_temp"]
         self.tyre_pressure = telemetry["tyre_pressure"]
         self.surface_type = telemetry["surface_type"]
-        
+    
+    #Updating lap data from packet 2
+    def update_lap_data(self,lapdata):
+        self.last_lap_time = lapdata["Last Lap Time"]
+        self.current_lap_time = lapdata["Current Lap Time"]
+        self.sector1_time = lapdata["Sector 1 Time"]
+        self.sector2_time = lapdata["Sector 2 Time"]
+        self.sector3_time = lapdata["Sector 3 Time"]
+        self.delta_to_car_infront = lapdata["Delta to Car in Front"]
 #Function to print the telemetry data
 from rich.table import Table
 #Temporary dashboard feature to identify the telemetry data being received
@@ -99,24 +107,26 @@ def create_dashboard(race_state):
     table.add_row("Brake", f"{race_state.brake*100:.0f}%")
     table.add_row("Steering", f"{race_state.steer:.2f}")
     table.add_row("DRS", "ON" if race_state.drs else "OFF")
-    table.add_row("Rev Lights", f"{race_state.rev_light_perc}%")
-    table.add_row("Brake Temperature (FL)", f"{race_state.brake_temp['FL']} °C")
-    table.add_row("Brake Temperature (FR)", f"{race_state.brake_temp['FR']} °C")
-    table.add_row("Brake Temperature (RL)", f"{race_state.brake_temp['RL']} °C")
-    table.add_row("Brake Temperature (RR)", f"{race_state.brake_temp['RR']} °C")
-    table.add_row("Tyre Surface Temperature (FL)", f"{race_state.tyre_surf_temp['FL']} °C")
-    table.add_row("Tyre Surface Temperature (FR)", f"{race_state.tyre_surf_temp['FR']} °C")
-    table.add_row("Tyre Surface Temperature (RL)", f"{race_state.tyre_surf_temp['RL']} °C")
-    table.add_row("Tyre Surface Temperature (RR)", f"{race_state.tyre_surf_temp['RR']} °C")
-    table.add_row("Tyre Inner Temperature (FL)", f"{race_state.tyre_inner_temp['FL']} °C")
-    table.add_row("Tyre Inner Temperature (FR)", f"{race_state.tyre_inner_temp['FR']} °C")
-    table.add_row("Tyre Inner Temperature (RL)", f"{race_state.tyre_inner_temp['RL']} °C")
-    table.add_row("Tyre Inner Temperature (RR)", f"{race_state.tyre_inner_temp['RR']} °C")
-    table.add_row("Engine Temperature", f"{race_state.engine_temp} °C")
-    table.add_row("Tyre Pressure (FL)", f"{race_state.tyre_pressure['FL']}")
-    table.add_row("Tyre Pressure (FR)", f"{race_state.tyre_pressure['FR']}")
-    table.add_row("Tyre Pressure (RL)", f"{race_state.tyre_pressure['RL']}")
-    table.add_row("Tyre Pressure (RR)", f"{race_state.tyre_pressure['RR']}")
+    # table.add_row("Rev Lights", f"{race_state.rev_light_perc}%")
+    # table.add_row("Brake Temperature (FL)", f"{race_state.brake_temp['FL']} °C")
+    # table.add_row("Brake Temperature (FR)", f"{race_state.brake_temp['FR']} °C")
+    # table.add_row("Brake Temperature (RL)", f"{race_state.brake_temp['RL']} °C")
+    # table.add_row("Brake Temperature (RR)", f"{race_state.brake_temp['RR']} °C")
+    # table.add_row("Tyre Surface Temperature (FL)", f"{race_state.tyre_surf_temp['FL']} °C")
+    # table.add_row("Tyre Surface Temperature (FR)", f"{race_state.tyre_surf_temp['FR']} °C")
+    # table.add_row("Tyre Surface Temperature (RL)", f"{race_state.tyre_surf_temp['RL']} °C")
+    # table.add_row("Tyre Surface Temperature (RR)", f"{race_state.tyre_surf_temp['RR']} °C")
+    # table.add_row("Tyre Inner Temperature (FL)", f"{race_state.tyre_inner_temp['FL']} °C")
+    # table.add_row("Tyre Inner Temperature (FR)", f"{race_state.tyre_inner_temp['FR']} °C")
+    # table.add_row("Tyre Inner Temperature (RL)", f"{race_state.tyre_inner_temp['RL']} °C")
+    # table.add_row("Tyre Inner Temperature (RR)", f"{race_state.tyre_inner_temp['RR']} °C")
+    # table.add_row("Engine Temperature", f"{race_state.engine_temp} °C")
+    # table.add_row("Tyre Pressure (FL)", f"{race_state.tyre_pressure['FL']}")
+    # table.add_row("Tyre Pressure (FR)", f"{race_state.tyre_pressure['FR']}")
+    # table.add_row("Tyre Pressure (RL)", f"{race_state.tyre_pressure['RL']}")
+    # table.add_row("Tyre Pressure (RR)", f"{race_state.tyre_pressure['RR']}")
+    table.add_row("Last lap time", f"{race_state.last_lap_time}")
+    
 
 
     return table
@@ -215,6 +225,14 @@ def parse_lap_data(data):
     sector1_time = lapdata[2]
     sector2_time = lapdata[4]
     delta_to_car_infront = lapdata[6]
+    return{
+        "Last Lap Time": last_lap_time,
+        "Current Lap Time": current_lap_time,
+        "Sector 1 Time": sector1_time,
+        "Sector 2 Time": sector2_time,
+        "Sector 3 Time": current_lap_time - sector1_time - sector2_time,
+        "Delta to Car in Front": delta_to_car_infront
+    }
     
 # while (True):
     
@@ -262,8 +280,8 @@ while True:
 
     if header["packet_id"] == 6:
         telemetry = parse_car_telemetry(data)
-        race_state.update(telemetry)
+        race_state.update_telemetry(telemetry)
     elif header["packet_id"] == 2:
         lapdata = parse_lap_data(data)
-        
+        race_state.update_lap_data(lapdata)
     
