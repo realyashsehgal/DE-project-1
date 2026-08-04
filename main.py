@@ -19,6 +19,7 @@ TELEMETRY_SIZE = struct.calcsize(TELEMETRY_FORMAT)
 #Race state class to hold the telemetry data
 class RaceState:
     def __init__(self):
+        #Inputting telemetry data 
         self.speed = 0
         self.throttle = 0.0
         self.steer = 0.0
@@ -72,7 +73,7 @@ class RaceState:
         
 #Function to print the telemetry data
 from rich.table import Table
-
+#Temporary dashboard feature to identify the telemetry data being received
 def create_dashboard(race_state):
     table = Table(title="My feed design (MFD)")
 
@@ -123,7 +124,7 @@ print(TELEMETRY_SIZE)
 sock.bind((HOST, PORT))
 print("Waiting for packets")
 
-
+#Receiving the the packets and parsing the header
 def parse_header(data):
     header = struct.unpack(HEADER_FORMAT, data[:HEADER_SIZE])
     return {
@@ -141,7 +142,7 @@ def parse_header(data):
         "secondary_player_car_index": header[11]
     }
 
-
+#Parsing the car telemetry data from th recieved packets
 def parse_car_telemetry(data):
     telemetry = struct.unpack(TELEMETRY_FORMAT, data[HEADER_SIZE:HEADER_SIZE + TELEMETRY_SIZE])
     speed = telemetry[0]
