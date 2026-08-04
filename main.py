@@ -126,7 +126,11 @@ def create_dashboard(race_state):
     # table.add_row("Tyre Pressure (RL)", f"{race_state.tyre_pressure['RL']}")
     # table.add_row("Tyre Pressure (RR)", f"{race_state.tyre_pressure['RR']}")
     table.add_row("Last lap time", f"{race_state.last_lap_time}")
-    
+    table.add_row("current Lap time", f"{race_state.current_lap_time}")
+    table.add_row("Sector 1 time", f"{race_state.sector1_time}")
+    table.add_row("Sector 2 time", f"{race_state.sector2_time}")
+    table.add_row("Sector 3 time", f"{race_state.sector3_time}")
+    table.add_row("Delta to car in front", f"{race_state.delta_to_car_infront}")
 
 
     return table
