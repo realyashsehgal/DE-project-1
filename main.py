@@ -61,7 +61,7 @@ class RaceState:
         self.current_lap_time = 0
         self.sector1_time = 0
         self.sector2_time = 0
-        self.sector3_time = 0
+        self.sector3_time = self.current_lap_time - self.sector1_time - self.sector2_time
         self.delta_to_car_infront = 0
         
         
@@ -209,7 +209,13 @@ def parse_car_telemetry(data):
     } 
     
 def parse_lap_data(data):
-    return
+    lapdata = struct.unpack(LAPDATA_FORMAT, data[HEADER_SIZE:HEADER_SIZE + LAPDATA_SIZE])
+    last_lap_time = lapdata[0]
+    current_lap_time = lapdata[1]
+    sector1_time = lapdata[2]
+    sector2_time = lapdata[4]
+    delta_to_car_infront = lapdata[6]
+    
 # while (True):
     
 #     data, addr = sock.recvfrom(2048)
