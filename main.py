@@ -14,12 +14,13 @@ HEADER_FORMAT = "<HBBBBBQfIIBB"
 HEADER_SIZE = struct.calcsize(HEADER_FORMAT)
 TELEMETRY_FORMAT = "<HfffBbHBBHHHHHBBBBBBBBHffffBBBB"
 TELEMETRY_SIZE = struct.calcsize(TELEMETRY_FORMAT)
-
+LAPDATA_FORMAT = "<IIHBHBHBHBfffBBBBBBBBBBBBBBBHHBfB"
+LAPDATA_SIZE = struct.calcsize(LAPDATA_FORMAT)
 
 #Race state class to hold the telemetry data
 class RaceState:
     def __init__(self):
-        #Inputting telemetry data 
+        #Inputting telemetry data from pack id 6
         self.speed = 0
         self.throttle = 0.0
         self.steer = 0.0
@@ -54,6 +55,17 @@ class RaceState:
             "RR":0
         }
         self.surface_type = 0
+        
+        #inputting the data from packet 2 -> Lap data
+        self.last_lap_time = 0
+        self.current_lap_time = 0
+        self.sector1_time = 0
+        self.sector2_time = 0
+        self.sector3_time = 0
+        self.delta_to_car_infront = 0
+        
+        
+        
     #Function to update the telemetry data
     def update(self,telemetry):
         self.speed = telemetry["speed"]
@@ -195,6 +207,9 @@ def parse_car_telemetry(data):
         "tyre_pressure" : tyre_pressure,
         "surface_type" : surface_type
     } 
+    
+def parse_lap_data(data):
+    return
 # while (True):
     
 #     data, addr = sock.recvfrom(2048)
@@ -227,6 +242,7 @@ def parse_car_telemetry(data):
 #     print(packet_id)
 #     print()
 
+
 #Race state object to hold the telemetry data 
 race_state = RaceState()
 dashboard_thread = threading.Thread(target=dashboard, daemon=True)
@@ -241,5 +257,7 @@ while True:
     if header["packet_id"] == 6:
         telemetry = parse_car_telemetry(data)
         race_state.update(telemetry)
+    elif header["packet_id"] == 2:
+        lapdata = parse_lap_data(data)
         
     
