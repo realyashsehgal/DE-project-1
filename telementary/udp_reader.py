@@ -82,3 +82,77 @@ class RaceState:
             "FR" : 0
         }
 
+#Receiving the the packets and parsing the header
+def parse_header(data):
+    header = struct.unpack(HEADER_FORMAT, data[:HEADER_SIZE])
+    return {
+        "packet_format": header[0],
+        "game_year": header[1],
+        "major_version": header[2],
+        "minor_version": header[3],
+        "packet_version": header[4],
+        "packet_id": header[5],
+        "session_uid": header[6],
+        "session_time": header[7],
+        "frame_identifier": header[8],
+        "overall_frame_identifier": header[9],
+        "player_car_index": header[10],
+        "secondary_player_car_index": header[11]
+    }
+
+#Parser for car telemetry
+def parse_car_telemetry(data):
+    telemetry = struct.unpack(TELEMETRY_FORMAT, data[HEADER_SIZE:HEADER_SIZE + TELEMETRY_SIZE])
+    speed = telemetry[0]
+    throttle = telemetry[1]
+    steer = telemetry[2]
+    brake = telemetry[3]
+    gear = telemetry[5]
+    rpm = telemetry[6]
+    drs = telemetry[7]
+    brake_temp ={
+        "RL": telemetry[10],
+        "RR": telemetry[11],
+        "FL": telemetry[12],
+        "FR": telemetry[13]
+    }
+    tyre_surf_temp = {
+        "RL": telemetry[14],
+        "RR": telemetry[15],
+        "FL": telemetry[16],
+        "FR": telemetry[17]
+    }
+    tyre_inner_temp = {
+        "RL": telemetry[18],
+        "RR": telemetry[19],
+        "FL": telemetry[20],
+        "FR": telemetry[21]
+    }
+    engine_temp = telemetry[22]
+    tyre_pressure = {
+        "RL": telemetry[23],
+        "RR": telemetry[24],
+        "FL": telemetry[25],
+        "FR": telemetry[26]
+    }
+    surface_type = {
+        "RL": telemetry[27],
+        "RR": telemetry[28],
+        "FL": telemetry[29],
+        "FR": telemetry[30]
+    }
+    return{
+        "speed":speed,
+        "throttle":throttle,
+        "steer":steer,
+        "brake":brake,
+        "gear":gear,
+        "rpm":rpm,
+        "drs":drs,
+        "brake_temp" : brake_temp,
+        "tyre_surf_temp" : tyre_surf_temp,
+        "tyre_inner_temp" : tyre_inner_temp,
+        "engine_temp" : engine_temp,
+        "tyre_pressure" : tyre_pressure,
+        "surface_type" : surface_type
+    } 
