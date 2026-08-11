@@ -85,8 +85,6 @@ def initialize_database():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS telemetry(
         session_id INTEGER,
-        curr_lap INTEGER,
-        lap_time INTEGER,
         speed INTEGER,
         throttle REAL,
         steer REAL,
