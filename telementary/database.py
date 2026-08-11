@@ -57,12 +57,66 @@ def initialize_database():
             delta_front INTEGER,
             lap_distance REAL,
             car_pos INTEGER,
-            current_sector INTEGER
+            current_sector INTEGER,
 
             FOREIGN KEY (session_id) REFERENCES session(session_id)
         )
     """)
 
+    #Telemetry data creation
+    #session id
+    #speed
+    #throttle
+    #steer
+    #brake
+    #gear
+    #rpm
+    #drs
+    #brake temp (FL,FR,RL,RR)
+    #tyre surface temp (FL,FR,RL,RR)
+    #tyre inner temp (FL,FR,RL,RR)
+    #engine temp
+    #tyre press (FL,FR,RL,RR)
+    #surface type
+
+
+    #now in the data below we will insert lap time and curr lap number from diffrent packets
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS telemetry(
+        session_id INTEGER,
+        curr_lap INTEGER,
+        lap_time INTEGER,
+        speed INTEGER,
+        throttle REAL,
+        steer REAL,
+        brake REAL,
+        gear INTEGER,
+        rpm INTEGER,
+        drs INTEGER,
+        RL_brake_temp INTEGER,
+        RR_brake_temp INTEGER,
+        FL_brake_temp INTEGER,
+        FR_brake_temp INTEGER,
+        RL_tyre_surface_temp INTEGER,
+        RR_tyre_surface_temp INTEGER,
+        FL_tyre_surface_temp INTEGER,
+        FR_tyre_surface_temp INTEGER,
+        RL_tyre_inner_temp INTEGER,
+        RR_tyre_inner_temp INTEGER,
+        FL_tyre_inner_temp INTEGER,
+        FR_tyre_inner_temp INTEGER,
+        engine_temp INTEGER,
+        RL_tyre_pressure REAL,
+        RR_tyre_pressure REAL,
+        FL_tyre_pressure REAL,
+        FR_tyre_pressure REAL,
+        RL_surface_type INTEGER,
+        RR_surface_type INTEGER,
+        FL_surface_type INTEGER,
+        FR_surface_type INTEGER
+        )
+    """)
     connection.commit()
     connection.close()
 
