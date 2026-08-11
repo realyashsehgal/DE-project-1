@@ -33,10 +33,35 @@ def initialize_database():
             track_length INTEGER,
             total_laps INTEGER
         )
-
-
     """)
 
+    #Lap data creation
+    #Session id foreign key 
+    #current lap num
+    #last lap time
+    #sector 1 lap time
+    #sector 2 lap time
+    #sector 3 lap time
+    #delta front
+    #lap distance
+    #Car position
+    #Current sector
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS laps(
+            session_id INTEGER,
+            current_lap INTEGER,
+            last_lap INTEGER,
+            sector1_time INTEGER,
+            sector2_time INTEGER,
+            sector3_time INTEGER,
+            delta_front INTEGER,
+            lap_distance REAL,
+            car_pos INTEGER,
+            current_sector INTEGER
+
+            FOREIGN KEY (session_id) REFERENCES session(session_id)
+        )
+    """)
 
     connection.commit()
     connection.close()
