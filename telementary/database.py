@@ -49,8 +49,8 @@ def initialize_database():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS laps(
             session_id INTEGER,
-            current_lap INTEGER,
             last_lap INTEGER,
+            current_lap INTEGER,
             sector1_time INTEGER,
             sector2_time INTEGER,
             sector3_time INTEGER,

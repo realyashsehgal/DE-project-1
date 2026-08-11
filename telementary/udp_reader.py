@@ -32,8 +32,8 @@ class RaceState:
         self.total_laps = 0
 
         #Lap data
-        self.current_lap = 0
         self.last_lap = 0
+        self.current_lap = 0
         self.sector1 = 0
         self.sector2 = 0
         self.sector3 = 0
@@ -156,3 +156,28 @@ def parse_car_telemetry(data):
         "tyre_pressure" : tyre_pressure,
         "surface_type" : surface_type
     } 
+
+#Parsing lap DATA
+def parse_lap_data(data):
+    lapdata = struct.unpack(LAPDATA_FORMAT, data[HEADER_SIZE:HEADER_SIZE + LAPDATA_SIZE])
+    last_lap_time = lapdata[0]
+    current_lap_time = lapdata[1]
+    sector1_time = lapdata[2]
+    sector2_time = lapdata[4]
+    delta_to_car_infront = lapdata[6]
+    lap_distance = lapdata[9]
+    car_position = lapdata[12]
+    current_sector = lapdata[16]
+
+    return{
+        "Last Lap Time": last_lap_time,
+        "Current Lap Time": current_lap_time,
+        "Sector 1 Time": sector1_time,
+        "Sector 2 Time": sector2_time,
+        "Sector 3 Time": current_lap_time - sector1_time - sector2_time,
+        "Delta to Car in Front": delta_to_car_infront,
+        "lap distance": lap_distance,
+        "car position": car_position,
+        "current sector": current_sector
+    }
+
