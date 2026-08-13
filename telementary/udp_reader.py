@@ -15,21 +15,21 @@ TELEMETRY_FORMAT = "<HfffBbHBBHHHHHBBBBBBBBHffffBBBB"
 TELEMETRY_SIZE = struct.calcsize(TELEMETRY_FORMAT)
 LAPDATA_FORMAT = "<IIHBHBHBHBfffBBBBBBBBBBBBBBBHHBfB"
 LAPDATA_SIZE = struct.calcsize(LAPDATA_FORMAT)
-
-
+SESSION_FORMAT = SESSION_FORMAT = "<HBBBBBQfIIBBBbbBHBbBHHBBBBBBfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbBBBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBIIIBBBBBBBBBBBBBBIBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBff"
+SESSION_SIZE = struct.calcsize(SESSION_FORMAT)
 
 #Race state class to store the data from the race
 class RaceState:
     def __init__(self):
         #Session data
         self.session_id = 0
-        self.track_id = 0
         self.session_type = 0
-        self.time = 0
         self.weather = 0
         self.track_temp = 0
-        self.track_length = 0
         self.total_laps = 0
+        self.track_length = 0
+        self.track_id = 0
+        self.time_left = 0
 
         #Lap data
         self.last_lap = 0
@@ -99,6 +99,22 @@ def parse_header(data):
         "player_car_index": header[10],
         "secondary_player_car_index": header[11]
     }
+
+#Parser for session
+
+
+def parse_session(data):
+    session = struct.unpack(SESSION_FORMAT, data[:SESSION_SIZE])
+    return{
+        "session_type" :session[2],
+        "weather" :session[4],
+        "track_temprature": session[5],
+        "total_laps": session[14],
+        "track_length": session[15],
+        "track_id": session[17],
+        "time_left": session[19]
+    }
+    
 
 #Parser for car telemetry
 def parse_car_telemetry(data):
@@ -181,3 +197,16 @@ def parse_lap_data(data):
         "current sector": current_sector
     }
 
+#Creating socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind((HOST,PORT))
+
+
+while True:
+    data, addr = sock.recvfrom(2048)
+
+    header = parse_header(data)
+
+    if header['packet_id'] == 1:
+        # session = parse
+        pass
