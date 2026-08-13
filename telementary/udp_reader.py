@@ -82,6 +82,33 @@ class RaceState:
             "FR" : 0
         }
 
+    def update_session(self,session,header):
+        self.session_id = header['session_uid']
+        self.session_type = session["session_type"]
+        self.weather = session["weather"]
+        self.track_temp = session["track_temprature"]
+        self.total_laps = session["total_laps"]
+        self.track_length = session["track_length"]
+        self.track_id = session["track_id"]
+        self.time_left = session["time_left"]
+
+       
+    def update_telemetry(self,telemetry,header):
+        self.speed = telemetry["speed"]
+        self.throttle = telemetry["throttle"]
+        self.steer = telemetry["steer"]
+        self.brake = telemetry["brake"]
+        self.gear = telemetry["gear"]
+        self.rpm = telemetry["rpm"]
+        self.drs = telemetry["drs"]
+        self.brake_temp = telemetry["brake_temp"]
+        self.tyre_surf_temp = telemetry["tyre_surf_temp"]
+        self.tyre_inner_temp= telemetry["tyre_inner_temp"]
+        self.engine_temp = telemetry["engine_temp"]
+        self.tyre_pressure = telemetry["tyre_pressure"]
+        self.surface_type = telemetry["surface_type"]    
+
+
 #Receiving the the packets and parsing the header
 def parse_header(data):
     header = struct.unpack(HEADER_FORMAT, data[:HEADER_SIZE])
