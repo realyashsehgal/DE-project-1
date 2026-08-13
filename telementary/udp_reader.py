@@ -240,6 +240,7 @@ def parse_lap_data(data):
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((HOST,PORT))
 
+race_state = RaceState()
 
 while True:
     data, addr = sock.recvfrom(2048)
@@ -247,5 +248,11 @@ while True:
     header = parse_header(data)
 
     if header['packet_id'] == 1:
-        # session = parse
-        pass
+        session = parse_session(data)
+        race_state.update_session(session,header)
+    elif header['packet_id'] == 2:
+        lap = parse_lap_data(data)
+        race_state.update_lap(lap)
+    elif header['packet_id'] == 6:
+        telem = parse_car_telemetry(data)
+        race_state.update_telemetry(telem,header)
