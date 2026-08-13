@@ -109,6 +109,18 @@ class RaceState:
         self.surface_type = telemetry["surface_type"]    
 
 
+    def update_lap(self,lap):
+        self.last_lap = lap["Last Lap Time"]
+        self.current_lap = lap["Current Lap Time"]
+        self.sector1 = lap["Sector 1 Time"]
+        self.sector2 = lap["Sector 2 Time"]
+        self.sector3 = lap["Sector 3 Time"]
+        self.delta_front = lap["Delta to Car in Front"]
+        self.lap_distance = lap["lap distance"]
+        self.car_pos = lap["car position"]
+        self.curr_sector = lap["current sector"]
+
+
 #Receiving the the packets and parsing the header
 def parse_header(data):
     header = struct.unpack(HEADER_FORMAT, data[:HEADER_SIZE])
