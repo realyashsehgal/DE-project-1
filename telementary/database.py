@@ -117,6 +117,41 @@ def insert_session():
     connection.commit()
     connection.close()
 
+def insert_lap():
+    connection =  get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO laps(
+            session_id,
+            last_lap,
+            current_lap,
+            sector1_time,
+            sector2_time,
+            sector3_time,
+            delta_front,
+            lap_distance,
+            car_pos,
+            current_sector
+        )
+        VALUES(?,?,?,?,?,?,?,?,?,?)
+    """,
+    (
+        race_state.session_id, 
+        race_state.last_lap,
+        race_state.current_lap,
+        race_state.sector1,
+        race_state.sector2,
+        race_state.sector3,
+        race_state.delta_front,
+        race_state.lap_distance,
+        race_state.car_pos ,
+        race_state.curr_sector       
+    ))
+
+    connection.commit()
+    connection.close()
+
 if __name__ == "__main__":
     initialize_database()
     print("db active")
