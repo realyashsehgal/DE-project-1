@@ -1,5 +1,5 @@
 import sqlite3
-
+from udp_reader import race_state
 DB_PATH = "telementary\\data\\pitwall.db"
 
 
@@ -13,15 +13,7 @@ def initialize_database():
     cursor = connection.cursor()
 
     #Saving session data like 
-    #Session id  =====>>>>> this is in the header of the packet
-    #rest of the data is available in session packet
-    #Track id
-    #Session type
-    #data/time
-    #weather
-    #Track info
-    #laps
-    #duration
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS sessions(
             session_id INTEGER PRIMARY KEY,  
@@ -36,16 +28,7 @@ def initialize_database():
     """)
 
     #Lap data creation
-    #Session id foreign key 
-    #current lap num
-    #last lap time
-    #sector 1 lap time
-    #sector 2 lap time
-    #sector 3 lap time
-    #delta front
-    #lap distance
-    #Car position
-    #Current sector
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS laps(
             session_id INTEGER,
@@ -59,26 +42,9 @@ def initialize_database():
             car_pos INTEGER,
             current_sector INTEGER,
 
-            FOREIGN KEY (session_id) REFERENCES session(session_id)
+            FOREIGN KEY (session_id) REFERENCES sessions(session_id)
         )
     """)
-
-    #Telemetry data creation
-    #session id
-    #speed
-    #throttle
-    #steer
-    #brake
-    #gear
-    #rpm
-    #drs
-    #brake temp (FL,FR,RL,RR)
-    #tyre surface temp (FL,FR,RL,RR)
-    #tyre inner temp (FL,FR,RL,RR)
-    #engine temp
-    #tyre press (FL,FR,RL,RR)
-    #surface type
-
 
     #now in the data below we will insert lap time and curr lap number from diffrent packets
 
@@ -118,7 +84,38 @@ def initialize_database():
     connection.commit()
     connection.close()
 
+def insert_session():
+    connection = get_connection()
+    cursor = connection.cursor()
 
+    cursor.execute("""
+        INSERT INTO sessions(
+        
+            session_id,  
+            track_id ,
+            session_type ,
+            time ,
+            weather ,
+            track_temp ,
+            track_length,
+            total_laps 
+        )
+        VALUES(?,?,?,?,?,?,?,?)
+    """,
+    (
+    race_state.session_id, 
+    race_state.track_id ,
+    race_state.session_type, 
+    race_state.time_left ,
+    race_state.weather ,
+    race_state.track_temp, 
+    race_state.track_length, 
+    race_state.total_laps 
+    ))
+
+
+    connection.commit()
+    connection.close()
 
 if __name__ == "__main__":
     initialize_database()

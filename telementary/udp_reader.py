@@ -143,7 +143,7 @@ def parse_header(data):
 
 
 def parse_session(data):
-    session = struct.unpack(SESSION_FORMAT, data[:SESSION_SIZE])
+    session = struct.unpack(SESSION_FORMAT, data[HEADER_SIZE:HEADER_SIZE+SESSION_SIZE])
     return{
         "session_type" :session[2],
         "weather" :session[4],
