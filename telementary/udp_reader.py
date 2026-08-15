@@ -15,9 +15,8 @@ TELEMETRY_FORMAT = "<HfffBbHBBHHHHHBBBBBBBBHffffBBBB"
 TELEMETRY_SIZE = struct.calcsize(TELEMETRY_FORMAT)
 LAPDATA_FORMAT = "<IIHBHBHBHBfffBBBBBBBBBBBBBBBHHBfB"
 LAPDATA_SIZE = struct.calcsize(LAPDATA_FORMAT)
-SESSION_FORMAT = SESSION_FORMAT = "<HBBBBBQfIIBBBbbBHBbBHHBBBBBBfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbBBBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBBbbbbBBBIIIBBBBBBBBBBBBBBIBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBff"
+SESSION_FORMAT = "<BbbBHBbBHHBBBBBB" + "fb"*21 + "BBB" + "BBBbbbbB"*64 + "BBIII" + "B"*14 + "I" + "B"*33 + "B"*12 + "ff"
 SESSION_SIZE = struct.calcsize(SESSION_FORMAT)
-
 #Race state class to store the data from the race
 class RaceState:
     def __init__(self):
@@ -143,16 +142,19 @@ def parse_header(data):
 
 
 def parse_session(data):
-    session = struct.unpack(SESSION_FORMAT, data[HEADER_SIZE:HEADER_SIZE+SESSION_SIZE])
-    return{
-        "session_type" :session[2],
-        "weather" :session[4],
-        "track_temprature": session[5],
-        "total_laps": session[14],
-        "track_length": session[15],
-        "track_id": session[17],
-        "time_left": session[19]
-    }
+    session = struct.unpack(
+    SESSION_FORMAT,
+    data[HEADER_SIZE:HEADER_SIZE + SESSION_SIZE]
+)
+    return {
+    "session_type": session[5],
+    "weather": session[0],
+    "track_temprature": session[1],
+    "total_laps": session[3],
+    "track_length": session[4],
+    "track_id": session[6],
+    "time_left": session[8]
+}
     
 
 #Parser for car telemetry
@@ -248,6 +250,9 @@ while True:
     header = parse_header(data)
 
     if header['packet_id'] == 1:
+        print("Packet ID:", header["packet_id"])
+        print("Packet size:", len(data))
+        print("Expected:", SESSION_SIZE + HEADER_SIZE)
         session = parse_session(data)
         race_state.update_session(session,header)
         insert_session(race_state)
