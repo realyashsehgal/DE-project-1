@@ -152,6 +152,85 @@ def insert_lap():
     connection.commit()
     connection.close()
 
+def insert_telemetry():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO telemetry(
+        session_id,
+        speed,
+        throttle,
+        steer,
+        brake,
+        gear,
+        rpm,
+        drs,
+        RL_brake_temp,
+        RR_brake_temp,
+        FL_brake_temp,
+        FR_brake_temp,
+        RL_tyre_surface_temp,
+        RR_tyre_surface_temp,
+        FL_tyre_surface_temp,
+        FR_tyre_surface_temp,
+        RL_tyre_inner_temp,
+        RR_tyre_inner_temp,
+        FL_tyre_inner_temp,
+        FR_tyre_inner_temp,
+        engine_temp,
+        RL_tyre_pressure,
+        RR_tyre_pressure,
+        FL_tyre_pressure,
+        FR_tyre_pressure,
+        RL_surface_type,
+        RR_surface_type,
+        FL_surface_type,
+        FR_surface_type
+        )
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    """,
+    (
+    race_state.session_id,
+    race_state.speed,
+    race_state.throttle,
+    race_state.steer,
+    race_state.brake,
+    race_state.gear,
+    race_state.rpm,
+    race_state.drs,
+
+    race_state.brake_temp["RL"],
+    race_state.brake_temp["RR"],
+    race_state.brake_temp["FL"],
+    race_state.brake_temp["FR"],
+
+    race_state.tyre_surf_temp["RL"],
+    race_state.tyre_surf_temp["RR"],
+    race_state.tyre_surf_temp["FL"],
+    race_state.tyre_surf_temp["FR"],
+
+    race_state.tyre_inner_temp["RL"],
+    race_state.tyre_inner_temp["RR"],
+    race_state.tyre_inner_temp["FL"],
+    race_state.tyre_inner_temp["FR"],
+
+    race_state.engine_temp,
+
+    race_state.tyre_pressure["RL"],
+    race_state.tyre_pressure["RR"],
+    race_state.tyre_pressure["FL"],
+    race_state.tyre_pressure["FR"],
+
+    race_state.surface_type["RL"],
+    race_state.surface_type["RR"],
+    race_state.surface_type["FL"],
+    race_state.surface_type["FR"]
+    ))
+
+    connection.commit()
+    connection.close()
+
 if __name__ == "__main__":
     initialize_database()
     print("db active")
