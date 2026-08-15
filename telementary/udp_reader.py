@@ -2,7 +2,7 @@ import struct
 import socket
 import time
 import os
-
+from databasee import initialize_database, insert_lap, insert_session, insert_telemetry
 
 HOST = "127.0.0.1"
 PORT = 20777
@@ -241,7 +241,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((HOST,PORT))
 
 race_state = RaceState()
-
+initialize_database()
 while True:
     data, addr = sock.recvfrom(2048)
 
@@ -250,9 +250,15 @@ while True:
     if header['packet_id'] == 1:
         session = parse_session(data)
         race_state.update_session(session,header)
+        insert_session(race_state)
+        print("session pack")
     elif header['packet_id'] == 2:
         lap = parse_lap_data(data)
         race_state.update_lap(lap)
+        insert_lap(race_state)
+        print("lap pack")
     elif header['packet_id'] == 6:
         telem = parse_car_telemetry(data)
         race_state.update_telemetry(telem,header)
+        insert_telemetry(race_state)
+        print("telem pack")

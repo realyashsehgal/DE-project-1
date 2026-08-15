@@ -1,5 +1,4 @@
 import sqlite3
-from udp_reader import race_state
 DB_PATH = "telementary\\data\\pitwall.db"
 
 
@@ -16,7 +15,7 @@ def initialize_database():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS sessions(
-            session_id INTEGER PRIMARY KEY,  
+            session_id TEXT,  
             track_id INTEGER,
             session_type INTEGER,
             time INTEGER,
@@ -31,7 +30,7 @@ def initialize_database():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS laps(
-            session_id INTEGER,
+            session_id TEXT,
             last_lap INTEGER,
             current_lap INTEGER,
             sector1_time INTEGER,
@@ -50,7 +49,7 @@ def initialize_database():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS telemetry(
-        session_id INTEGER,
+        session_id TEXT,
         speed INTEGER,
         throttle REAL,
         steer REAL,
@@ -84,7 +83,7 @@ def initialize_database():
     connection.commit()
     connection.close()
 
-def insert_session():
+def insert_session(race_state):
     connection = get_connection()
     cursor = connection.cursor()
 
@@ -103,7 +102,7 @@ def insert_session():
         VALUES(?,?,?,?,?,?,?,?)
     """,
     (
-    race_state.session_id, 
+    str(race_state.session_id), 
     race_state.track_id ,
     race_state.session_type, 
     race_state.time_left ,
@@ -117,7 +116,7 @@ def insert_session():
     connection.commit()
     connection.close()
 
-def insert_lap():
+def insert_lap(race_state):
     connection =  get_connection()
     cursor = connection.cursor()
 
@@ -137,7 +136,7 @@ def insert_lap():
         VALUES(?,?,?,?,?,?,?,?,?,?)
     """,
     (
-        race_state.session_id, 
+        str(race_state.session_id), 
         race_state.last_lap,
         race_state.current_lap,
         race_state.sector1,
@@ -152,7 +151,7 @@ def insert_lap():
     connection.commit()
     connection.close()
 
-def insert_telemetry():
+def insert_telemetry(race_state):
     connection = get_connection()
     cursor = connection.cursor()
 
@@ -191,7 +190,7 @@ def insert_telemetry():
         VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     """,
     (
-    race_state.session_id,
+    str(race_state.session_id),
     race_state.speed,
     race_state.throttle,
     race_state.steer,
