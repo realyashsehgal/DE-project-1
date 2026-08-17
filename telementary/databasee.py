@@ -30,6 +30,7 @@ def initialize_database():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS laps(
+            timestamp INTEGER,
             session_id TEXT,
             last_lap INTEGER,
             current_lap INTEGER,
@@ -49,6 +50,7 @@ def initialize_database():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS telemetry(
+        timestamp INTEGER,
         session_id TEXT,
         speed INTEGER,
         throttle REAL,
@@ -122,6 +124,7 @@ def insert_lap(race_state):
 
     cursor.execute("""
         INSERT INTO laps(
+            timestamp,
             session_id,
             last_lap,
             current_lap,
@@ -133,9 +136,10 @@ def insert_lap(race_state):
             car_pos,
             current_sector
         )
-        VALUES(?,?,?,?,?,?,?,?,?,?)
+        VALUES(?,?,?,?,?,?,?,?,?,?,?)
     """,
     (
+        race_state.session_time,
         str(race_state.session_id), 
         race_state.last_lap,
         race_state.current_lap,
@@ -157,6 +161,7 @@ def insert_telemetry(race_state):
 
     cursor.execute("""
         INSERT INTO telemetry(
+        timestamp,
         session_id,
         speed,
         throttle,
@@ -187,9 +192,10 @@ def insert_telemetry(race_state):
         FL_surface_type,
         FR_surface_type
         )
-        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     """,
     (
+    race_state.session_time,
     str(race_state.session_id),
     race_state.speed,
     race_state.throttle,

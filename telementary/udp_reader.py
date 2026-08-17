@@ -20,6 +20,9 @@ SESSION_SIZE = struct.calcsize(SESSION_FORMAT)
 #Race state class to store the data from the race
 class RaceState:
     def __init__(self):
+        #Header data
+        self.session_time = 0
+
         #Session data
         self.session_id = 0
         self.session_type = 0
@@ -248,11 +251,9 @@ while True:
     data, addr = sock.recvfrom(2048)
 
     header = parse_header(data)
-
+    race_state.session_time = header["session_time"]
+    
     if header['packet_id'] == 1:
-        print("Packet ID:", header["packet_id"])
-        print("Packet size:", len(data))
-        print("Expected:", SESSION_SIZE + HEADER_SIZE)
         session = parse_session(data)
         race_state.update_session(session,header)
         insert_session(race_state)
