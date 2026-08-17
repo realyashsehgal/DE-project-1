@@ -252,7 +252,7 @@ while True:
 
     header = parse_header(data)
     race_state.session_time = header["session_time"]
-    
+    print(header['player_car_index'])
     if header['packet_id'] == 1:
         session = parse_session(data)
         race_state.update_session(session,header)
@@ -266,5 +266,10 @@ while True:
     elif header['packet_id'] == 6:
         telem = parse_car_telemetry(data)
         race_state.update_telemetry(telem,header)
-        insert_telemetry(race_state)
+        # insert_telemetry(race_state)
+        try:
+            insert_telemetry(race_state)
+            print("TELEMETRY INSERTED")
+        except Exception as e:
+            print("TELEMETRY INSERT ERROR:", e)
         print("telem pack")

@@ -30,7 +30,7 @@ def initialize_database():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS laps(
-            timestamp INTEGER,
+            timestamp REAL,
             session_id TEXT,
             last_lap INTEGER,
             current_lap INTEGER,
@@ -50,7 +50,7 @@ def initialize_database():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS telemetry(
-        timestamp INTEGER,
+        timestamp REAL,
         session_id TEXT,
         speed INTEGER,
         throttle REAL,
