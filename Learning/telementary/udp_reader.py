@@ -2,7 +2,7 @@ import struct
 import socket
 import time
 import os
-from databasee import initialize_database, insert_lap, insert_session, insert_telemetry
+from Learning.telementary.databasee import initialize_database, insert_lap, insert_session, insert_telemetry
 
 HOST = "127.0.0.1"
 PORT = 20777
@@ -19,108 +19,108 @@ SESSION_FORMAT = "<BbbBHBbBHHBBBBBB" + "fb"*21 + "BBB" + "BBBbbbbB"*64 + "BBIII"
 SESSION_SIZE = struct.calcsize(SESSION_FORMAT)
 #Race state class to store the data from the race
 class RaceState:
-    def __init__(self):
-        #Header data
-        self.session_time = 0
+        def __init__(self):
+            #Header data
+            self.session_time = 0
 
-        #Session data
-        self.session_id = 0
-        self.session_type = 0
-        self.weather = 0
-        self.track_temp = 0
-        self.total_laps = 0
-        self.track_length = 0
-        self.track_id = 0
-        self.time_left = 0
+            #Session data
+            self.session_id = 0
+            self.session_type = 0
+            self.weather = 0
+            self.track_temp = 0
+            self.total_laps = 0
+            self.track_length = 0
+            self.track_id = 0
+            self.time_left = 0
 
-        #Lap data
-        self.last_lap = 0
-        self.current_lap = 0
-        self.sector1 = 0
-        self.sector2 = 0
-        self.sector3 = 0
-        self.delta_front = 0
-        self.lap_distance = 0
-        self.car_pos = 0
-        self.curr_sector = 0
+            #Lap data
+            self.last_lap = 0
+            self.current_lap = 0
+            self.sector1 = 0
+            self.sector2 = 0
+            self.sector3 = 0
+            self.delta_front = 0
+            self.lap_distance = 0
+            self.car_pos = 0
+            self.curr_sector = 0
 
-        #Telemetry data
-        self.speed = 0
-        self.throttle = 0
-        self.steer = 0
-        self.brake = 0
-        self.gear = 0
-        self.rpm = 0
-        self.drs = 0
-        self.brake_temp = {
-            "RL" : 0,
-            "RR" : 0,
-            "FL" : 0,
-            "FR" : 0
-        }
-        self.tyre_surf_temp = {
-            "RL" : 0,
-            "RR" : 0,
-            "FL" : 0,
-            "FR" : 0
-        }
-        self.tyre_inner_temp= {
-            "RL" : 0,
-            "RR" : 0,
-            "FL" : 0,
-            "FR" : 0
-        }
-        self.engine_temp = 0
-        self.tyre_pressure = {
-            "RL" : 0,
-            "RR" : 0,
-            "FL" : 0,
-            "FR" : 0
-        }
-        self.surface_type = {
-            "RL" : 0,
-            "RR" : 0,
-            "FL" : 0,
-            "FR" : 0
-        }
+            #Telemetry data
+            self.speed = 0
+            self.throttle = 0
+            self.steer = 0
+            self.brake = 0
+            self.gear = 0
+            self.rpm = 0
+            self.drs = 0
+            self.brake_temp = {
+                "RL" : 0,
+                "RR" : 0,
+                "FL" : 0,
+                "FR" : 0
+            }
+            self.tyre_surf_temp = {
+                "RL" : 0,
+                "RR" : 0,
+                "FL" : 0,
+                "FR" : 0
+            }
+            self.tyre_inner_temp= {
+                "RL" : 0,
+                "RR" : 0,
+                "FL" : 0,
+                "FR" : 0
+            }
+            self.engine_temp = 0
+            self.tyre_pressure = {
+                "RL" : 0,
+                "RR" : 0,
+                "FL" : 0,
+                "FR" : 0
+            }
+            self.surface_type = {
+                "RL" : 0,
+                "RR" : 0,
+                "FL" : 0,
+                "FR" : 0
+            }
 
-    def update_session(self,session,header):
-        self.session_id = header['session_uid']
-        self.session_type = session["session_type"]
-        self.weather = session["weather"]
-        self.track_temp = session["track_temprature"]
-        self.total_laps = session["total_laps"]
-        self.track_length = session["track_length"]
-        self.track_id = session["track_id"]
-        self.time_left = session["time_left"]
+        def update_session(self,session,header):
+            self.session_id = header['session_uid']
+            self.session_type = session["session_type"]
+            self.weather = session["weather"]
+            self.track_temp = session["track_temprature"]
+            self.total_laps = session["total_laps"]
+            self.track_length = session["track_length"]
+            self.track_id = session["track_id"]
+            self.time_left = session["time_left"]
 
-       
-    def update_telemetry(self,telemetry,header):
-        self.speed = telemetry["speed"]
-        self.throttle = telemetry["throttle"]
-        self.steer = telemetry["steer"]
-        self.brake = telemetry["brake"]
-        self.gear = telemetry["gear"]
-        self.rpm = telemetry["rpm"]
-        self.drs = telemetry["drs"]
-        self.brake_temp = telemetry["brake_temp"]
-        self.tyre_surf_temp = telemetry["tyre_surf_temp"]
-        self.tyre_inner_temp= telemetry["tyre_inner_temp"]
-        self.engine_temp = telemetry["engine_temp"]
-        self.tyre_pressure = telemetry["tyre_pressure"]
-        self.surface_type = telemetry["surface_type"]    
+        
+        def update_telemetry(self,telemetry,header):
+            self.speed = telemetry["speed"]
+            self.throttle = telemetry["throttle"]
+            self.steer = telemetry["steer"]
+            self.brake = telemetry["brake"]
+            self.gear = telemetry["gear"]
+            self.rpm = telemetry["rpm"]
+            self.drs = telemetry["drs"]
+            self.brake_temp = telemetry["brake_temp"]
+            self.tyre_surf_temp = telemetry["tyre_surf_temp"]
+            self.tyre_inner_temp= telemetry["tyre_inner_temp"]
+            self.engine_temp = telemetry["engine_temp"]
+            self.tyre_pressure = telemetry["tyre_pressure"]
+            self.surface_type = telemetry["surface_type"]    
 
 
-    def update_lap(self,lap):
-        self.last_lap = lap["Last Lap Time"]
-        self.current_lap = lap["Current Lap Time"]
-        self.sector1 = lap["Sector 1 Time"]
-        self.sector2 = lap["Sector 2 Time"]
-        self.sector3 = lap["Sector 3 Time"]
-        self.delta_front = lap["Delta to Car in Front"]
-        self.lap_distance = lap["lap distance"]
-        self.car_pos = lap["car position"]
-        self.curr_sector = lap["current sector"]
+        def update_lap(self,lap):
+            self.last_lap = lap["Last Lap Time"]
+            self.current_lap = lap["Current Lap Time"]
+            self.sector1 = lap["Sector 1 Time"]
+            self.sector2 = lap["Sector 2 Time"]
+            self.sector3 = lap["Sector 3 Time"]
+            self.delta_front = lap["Delta to Car in Front"]
+            self.lap_distance = lap["lap distance"]
+            self.car_pos = lap["car position"]
+            self.curr_sector = lap["current sector"]
 
 
 #Receiving the the packets and parsing the header
