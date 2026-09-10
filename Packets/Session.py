@@ -97,7 +97,7 @@ class Sessions:
         self.m_sli_pro_native_supp = values[14]
 
         # Marshal zones: values 15 → 56
-        self.m_num_mar_zone = values[57]
+        self.m_num_mar_zone = values[56]
 
         self.safety_car_status = values[57]
         self.network_game = values[58]
