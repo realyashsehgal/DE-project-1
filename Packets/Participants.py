@@ -27,16 +27,24 @@ class ParticipantsData:
         self.liverycolors = []
 
     def parse_participantdata(self, values, index):
-        self.m_aicontrolled = values[index ]
+        self.m_aicontrolled = values[index]
         self.m_driver_id = values[index + 1]
         self.m_network_id = values[index + 2]
         self.m_team_id = values[index + 3]
         self.m_my_teamid = values[index + 4]
         self.m_race_num = values[index + 5]
         self.m_nationality = values[index + 6]
-        self.m_name = values[index + 7]
+        self.m_name = values[index + 7].decode("utf-8").rstrip("\x00")
         self.m_telemetry = values[index + 8]
         self.m_showonlinename = values[index + 9]
         self.m_tech_level = values[index + 10]
         self.m_platform = values[index + 11]
         self.m_numcolors = values[index + 12]
+
+        self.liverycolors = []
+        color_index = index + 13
+        for _ in range(4):
+            color = LiveryColor()
+            color.parse_liverycolor(values, color_index)
+            self.liverycolors.append(color)
+            color_index += 3
