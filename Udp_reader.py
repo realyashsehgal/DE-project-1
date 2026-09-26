@@ -1,5 +1,6 @@
 import socket
 import struct
+import argparse
 
 from Packets.Final import FinalClassificationData
 from Packets.Header import Header
@@ -13,6 +14,8 @@ from Packets.Telemetry import CarTelemetryData
 HOST = "127.0.0.1"
 PORT = 20777
 MAX_CARS = 22
+SELECTED_CAR_INDEX = None
+LATEST_PACKETS = {}
 
 HEADER_FORMAT = "<HBBBBBQfIIBB"
 HEADER_SIZE = struct.calcsize(HEADER_FORMAT)
@@ -211,7 +214,18 @@ def decode_packet(data):
     return header, packet
 
 
-def main():
+def select_driver(packet, car_index):
+    if packet is None or not isinstance(packet, list):
+        return None
+    if car_index < 0 or car_index >= len(packet):
+        raise IndexError(
+            f"Car index {car_index} is unavailable; packet contains "
+            f"{len(packet)} cars"
+        )
+    return packet[car_index]
+
+
+def main(selected_car_index=SELECTED_CAR_INDEX):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         sock.bind((HOST, PORT))
         while True:
@@ -222,22 +236,61 @@ def main():
                 print(f"Invalid packet: {error}")
                 continue
 
+            LATEST_PACKETS[header.packet_id] = packet
             print("Packet ID:", header.packet_id)
             if header.packet_id == 1:
                 print("Session packet")
-            elif header.packet_id == 2:
-                print(f"Lap Data packet ({len(packet)} cars)")
-            elif header.packet_id == 4:
-                print(f"Participants packet ({len(packet)} cars)")
-            elif header.packet_id == 6:
-                print(f"Car Telemetry packet ({len(packet)} cars)")
-            elif header.packet_id == 8:
-                print(f"Final Classification packet ({len(packet)} cars)")
-            elif header.packet_id == 9:
-                print(f"Lobby Info packet ({len(packet)} players)")
             else:
-                print("Unsupported packet")
+                driver_index = (
+                    header.player_carid
+                    if selected_car_index is None
+                    else selected_car_index
+                )
+                try:
+                    selected_driver = select_driver(
+                        packet, driver_index
+                    )
+                except IndexError as error:
+                    print(f"Selected driver unavailable: {error}")
+                    continue
+
+                packet_names = {
+                    2: "Lap Data",
+                    4: "Participants",
+                    6: "Car Telemetry",
+                    8: "Final Classification",
+                    9: "Lobby Info",
+                }
+                packet_name = packet_names.get(
+                    header.packet_id, "Unsupported"
+                )
+                if selected_driver is None:
+                    print(f"{packet_name} packet")
+                else:
+                    print(
+                        f"{packet_name} packet: selected car "
+                        f"{driver_index}"
+                    )
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Read F1 UDP telemetry packets"
+    )
+    parser.add_argument(
+        "--car-index",
+        type=int,
+        default=SELECTED_CAR_INDEX,
+        help=(
+            "Zero-based car index to select. Defaults to the local player "
+            "index from the packet header."
+        ),
+    )
+    args = parser.parse_args()
+    if args.car_index is not None and not 0 <= args.car_index < MAX_CARS:
+        parser.error(f"--car-index must be between 0 and {MAX_CARS - 1}")
+    return args
 
 
 if __name__ == "__main__":
-    main()
+    main(parse_args().car_index)
