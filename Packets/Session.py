@@ -78,6 +78,7 @@ class Sessions:
         self.WeekednStructure = None
         self.sector2Lap_distancestart = None
         self.sector3Lap_distancestart = None
+        
     def parse_session(self, values):
         self.m_curr_weather = values[0]
         self.m_curr_tracktemp = values[1]
@@ -95,77 +96,83 @@ class Sessions:
         self.m_is_spec = values[12]
         self.m_spec_car_index = values[13]
         self.m_sli_pro_native_supp = values[14]
+        self.m_num_mar_zone = values[15]
 
-        # Marshal zones: values 15 → 56
-        self.m_num_mar_zone = values[56]
+        # Marshal zones: values 16 → 57
+        # 21 zones × 2 values = 42 values
 
-        self.safety_car_status = values[57]
-        self.network_game = values[58]
-        self.num_weather_forecastsample = values[59]
+        self.safety_car_status = values[58]
+        self.network_game = values[59]
+        self.num_weather_forecastsample = values[60]
 
-        # WeatherForecastSamples: values 60 → 571
+        # Weather Forecast Samples: values 61 → 572
+        # 64 samples × 8 values = 512 values
 
-        self.m_forecast_accuracy = values[572]
-        self.m_ai_diff = values[573]
-        self.m_seasonlink_id = values[574]
-        self.m_weekendlink_id = values[575]
-        self.m_sessionlink_id = values[576]
+        self.m_forecast_accuracy = values[573]
+        self.m_ai_diff = values[574]
+        self.m_seasonlink_id = values[575]
+        self.m_weekendlink_id = values[576]
+        self.m_sessionlink_id = values[577]
 
-        self.m_pitstopwindow_ideallap = values[577]
-        self.m_pitstopwindow_latestlap = values[578]
-        self.pitstop_rejoin_pos = values[579]
-        self.steer_assist = values[580]
-        self.braking_assist = values[581]
-        self.gearbox_assist = values[582]
-        self.pit_assist = values[583]
-        self.pitrelease_assist = values[584]
-        self.ers_assist = values[585]
-        self.drs_assist = values[586]
-        self.dynamic_racingline = values[587]
-        self.dynamic_racingline_type = values[588]
-        self.game_mode = values[589]
-        self.rules_set = values[590]
+        self.m_pitstopwindow_ideallap = values[578]
+        self.m_pitstopwindow_latestlap = values[579]
+        self.pitstop_rejoin_pos = values[580]
+        self.steer_assist = values[581]
+        self.braking_assist = values[582]
+        self.gearbox_assist = values[583]
+        self.pit_assist = values[584]
+        self.pitrelease_assist = values[585]
+        self.ers_assist = values[586]
+        self.drs_assist = values[587]
+        self.dynamic_racingline = values[588]
+        self.dynamic_racingline_type = values[589]
+        self.game_mode = values[590]
+        self.rules_set = values[591]
 
-        self.timeofday = values[591]
+        self.timeofday = values[592]
 
-        self.session_length = values[592]
-        self.m_speedunits_leadplayer = values[593]
-        self.m_tempratureunits_leadplayer = values[594]
-        self.m_speeduntis_secondaryplayer = values[595]
-        self.m_tempratureunits_secondaryplayer = values[596]
-        self.m_numsafetycar_periods = values[597]
-        self.m_numVirtualsafetycar_periods = values[598]
-        self.m_numredflag_periods = values[599]
-        self.m_equalcar_performance = values[600]
-        self.m_recoverymode = values[601]
-        self.m_flashback_limit = values[602]
-        self.surface_type = values[603]
-        self.m_low_feul_mode = values[604]
-        self.m_race_starts = values[605]
-        self.m_tyretemp = values[606]
-        self.m_pitlane_tyretemp_sim = values[607]
-        self.m_carDamage = values[608]
-        self.m_cardamage_rate = values[609]
-        self.m_collisions = values[610]
-        self.collisionoff_forfirstlap = values[611]
-        self.mpUnsafe_pitrelease = values[612]
-        self.mpoff_forgreifing = values[613]
-        self.corner_cutting_stringency = values[614]
-        self.parcferme_rules = values[615]
-        self.pitstop_experience = values[616]
-        self.m_safetycar = values[617]
-        self.m_safetycar_experience = values[618]
-        self.m_formation_lap = values[619]
-        self.m_formation_lap_experience = values[620]
-        self.m_redflag = values[621]
-        self.m_affects_Licenselevel = values[622]
-        self.m_affects_Licenselevel_MP = values[623]
+        self.session_length = values[593]
+        self.m_speedunits_leadplayer = values[594]
+        self.m_tempratureunits_leadplayer = values[595]
+        self.m_speeduntis_secondaryplayer = values[596]
+        self.m_tempratureunits_secondaryplayer = values[597]
+        self.m_numsafetycar_periods = values[598]
+        self.m_numVirtualsafetycar_periods = values[599]
+        self.m_numredflag_periods = values[600]
+        self.m_equalcar_performance = values[601]
+        self.m_recoverymode = values[602]
+        self.m_flashback_limit = values[603]
+        self.surface_type = values[604]
+        self.m_low_feul_mode = values[605]
+        self.m_race_starts = values[606]
+        self.m_tyretemp = values[607]
+        self.m_pitlane_tyretemp_sim = values[608]
+        self.m_carDamage = values[609]
+        self.m_cardamage_rate = values[610]
+        self.m_collisions = values[611]
+        self.collisionoff_forfirstlap = values[612]
+        self.mpUnsafe_pitrelease = values[613]
+        self.mpoff_forgreifing = values[614]
+        self.corner_cutting_stringency = values[615]
+        self.parcferme_rules = values[616]
+        self.pitstop_experience = values[617]
+        self.m_safetycar = values[618]
+        self.m_safetycar_experience = values[619]
+        self.m_formation_lap = values[620]
+        self.m_formation_lap_experience = values[621]
+        self.m_redflag = values[622]
+        self.m_affects_Licenselevel = values[623]
+        self.m_affects_Licenselevel_MP = values[624]
 
-        self.m_numsessions_Inweekend = values[624]
+        self.m_numsessions_Inweekend = values[625]
 
-        # WeekendStructure: values 625 → 636
-        self.sector2Lap_distancestart = values[637]
-        self.sector3Lap_distancestart = values[638]
+        # WeekendStructure: values 626 → 637
+        # 12 values
+
+        self.sector2Lap_distancestart = values[638]
+        self.sector3Lap_distancestart = values[639]
+
+
 class MarshalZone(Sessions):
     def __init__(self):
         self.m_zonestart = None

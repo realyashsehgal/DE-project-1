@@ -13,7 +13,7 @@ class Header:
         self.player_carid = None
         self.second_carid = None
 
-    def parse(self, values):
+    def parse_head(self, values):
         self.pack_format = values[0]
         self.game_year = values[1]
         self.major_version = values[2]
